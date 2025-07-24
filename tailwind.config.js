@@ -3,7 +3,8 @@
 export default {
   content: [
     "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}", // This line tells Tailwind to scan your component files
+    "./src/**/*.{js,ts,jsx,tsx}",
+    "./src/components/ArbitratorRegistration/**/*.{js,ts,jsx,tsx}", // This line tells Tailwind to scan your component files
   ],
   theme: {
     extend: {

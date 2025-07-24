@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Step1_EnterPhone from '../Registration/Step1_EnterPhone';
-import Step2_VerifyOTP from '../Registration/Step2_VerifyOTP';
-import Step3_UserDetails from '../Registration/Step3_UserDetails.jsx';
+import Step1_EnterPhone from '../Registration/Step1_EnterPhone.jsx';
+import Step2_VerifyOTP from '../Registration/Step2_VerifyOTP.jsx';
+// At the top of src/pages/RegistrationPage.jsx
+import Step3_UserDetails from '../Registration/Step3_UserDetails.jsx'; // Make sure this has one .jsx
 
 // 1. ADD 'onRegistrationComplete' to the props
 export default function RegistrationPage({ onRegistrationComplete }) { 
