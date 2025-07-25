@@ -1,50 +1,39 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 export default function Sidebar({ user, onLogout }) {
+    // This styling logic will now match the new theme automatically
+    const getNavLinkClass = ({ isActive }) => isActive
+        ? "flex items-center px-4 py-3 text-brand-dark bg-brand-accent rounded-xl shadow-lg"
+        : "flex items-center px-4 py-3 text-brand-light hover:bg-brand-secondary rounded-xl transition-colors duration-300";
+
   return (
-    <aside className="w-72 bg-white shadow-2xl flex flex-col">
-      <div className="flex items-center justify-center p-8 border-b border-gray-200">
-        <span className="material-icons text-4xl text-primary mr-3">gavel</span>
-        <h1 className="text-3xl font-bold text-primary playfair-display">eNyay Setu</h1>
+    <aside className="w-72 bg-brand-secondary shadow-2xl flex-col hidden md:flex">
+      <div className="flex items-center justify-center p-8 border-b border-brand-gray">
+        <span className="material-icons text-4xl text-brand-accent mr-3">gavel</span>
+        <h1 className="text-3xl font-bold text-brand-light playfair-display">eNyay Setu</h1>
       </div>
 
       <nav className="flex-1 px-6 py-8 space-y-3">
-        {/* --- ORIGINAL NAV ITEMS ARE RESTORED --- */}
-        <Link to="/" className="flex items-center px-4 py-3 text-white bg-primary rounded-xl shadow-md">
+        <NavLink to="/" className={getNavLinkClass} end> {/* `end` prop for exact matching */}
           <span className="material-icons mr-4">home</span>
           <span className="font-medium text-lg">Home</span>
-        </Link>
+        </NavLink>
+        {user && user.role === 'user' && (
+          <NavLink to="/file-a-case" className={getNavLinkClass}><span className="material-icons mr-4">add_box</span><span className="font-medium text-lg">File a New Case</span></NavLink>
+        )}
+        {user && (
+          <NavLink to="/history" className={getNavLinkClass}><span className="material-icons mr-4">history</span><span className="font-medium text-lg">Case History</span></NavLink>
+        )}
+        <NavLink to="/find-arbitrator" className={getNavLinkClass}><span className="material-icons mr-4">person_search</span><span className="font-medium text-lg">Find Arbitrator</span></NavLink>
         
-        {/* --- THIS IS THE FUNCTIONAL, CONDITIONAL LINK --- */}
-        {/* It only appears if a user is logged in */}
-      
-
-        {/* --- THE REST OF THE ORIGINAL NAV ITEMS ARE RESTORED --- */}
-        <Link to="/history" className="flex items-center px-4 py-3 text-secondary hover:bg-secondary rounded-xl transition-colors duration-300">
-          <span className="material-icons mr-4">history</span>
-          <span className="font-medium text-lg">History</span>
-        </Link>
-        <Link to="/find-arbitrator" className="flex items-center px-4 py-3 text-secondary hover:bg-secondary rounded-xl transition-colors duration-300">
-          <span className="material-icons mr-4">person_search</span>
-          <span className="font-medium text-lg">Find Arbitrator</span>
-        </Link>
-        <Link to="/settings" className="flex items-center px-4 py-3 text-secondary hover:bg-secondary rounded-xl transition-colors duration-300">
-          <span className="material-icons mr-4">settings</span>
-          <span className="font-medium text-lg">Settings</span>
-        </Link>
-        <Link to="#" className="flex items-center px-4 py-3 text-secondary hover:bg-secondary rounded-xl transition-colors duration-300">
-          <span className="material-icons mr-4">description</span>
-          <span className="font-medium text-lg">Lorem</span>
-        </Link>
+        {/* SETTINGS AND LOREM ARE NOW REMOVED */}
       </nav>
 
-      {/* The logout button logic is correct and stays */}
-      <div className="p-6 border-t border-gray-200">
+      <div className="p-6 border-t border-brand-gray">
         {user && (
-          <button onClick={onLogout} className="w-full flex items-center justify-center px-4 py-3 text-secondary bg-white hover:bg-secondary rounded-xl border-2 border-secondary transition-colors duration-300">
-            <span className="material-icons mr-2">logout</span>
-            <span className="font-medium text-lg">Logout</span>
+          <button onClick={onLogout} className="w-full flex items-center justify-center px-4 py-3 text-brand-light bg-transparent hover:bg-brand-gray rounded-xl border-2 border-brand-gray transition-colors duration-300">
+            <span className="material-icons mr-2">logout</span><span className="font-medium text-lg">Logout</span>
           </button>
         )}
       </div>

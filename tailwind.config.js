@@ -8,15 +8,26 @@ export default {
   ],
   theme: {
     extend: {
-      colors:{
-        'custom-gray': '#f8f9fa',
-        'custom-navy': '#1a2a4d',
-        'custom-gold': '#c4a66a',
+      colors: {
+        'brand-dark': '#0D1B2A',    // Midnight Blue
+        'brand-secondary': '#1B263B', // Darker Blue-Gray
+        'brand-gray': '#415A77',     // Steel Blue/Gray
+        'brand-light': '#E0E1DD',   // Off-white
+        'brand-accent': '#32E0C4',   // Electric Aqua/Teal
       },
       fontFamily: {
         lato: ['Lato', 'sans-serif'],
-        merriweather: ['Merriweather', 'serif'],
-      }
+        playfair: ['Playfair Display', 'serif'],
+      },
+      keyframes: {
+        fadeInUp: {
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+      },
+      animation: {
+        'fadeInUp': 'fadeInUp 0.8s ease-out forwards',
+      },
     },
   },
   plugins: [],
