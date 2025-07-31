@@ -1,94 +1,79 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import axios from 'axios';
 import Step1_EnterPhone from '../Registration/Step1_EnterPhone.jsx';
 import Step2_VerifyOTP from '../Registration/Step2_VerifyOTP.jsx';
-// At the top of src/pages/RegistrationPage.jsx
-import Step3_UserDetails from '../Registration/Step3_UserDetails.jsx'; // Make sure this has one .jsx
+import Step3_UserDetails from '../Registration/Step3_UserDetails.jsx';
 
-// 1. ADD 'onRegistrationComplete' to the props
 export default function RegistrationPage({ onRegistrationComplete }) { 
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState({ phone: '', name: '', email: '' });
-  const totalSteps = 3; 
-
+  const [formData, setFormData] = useState({ phone: '', name: '', email: '', password: '' });
+  const [error, setError] = useState('');
+  
   const updateFormData = (field, value) => {
-    setFormData(prevData => ({ ...prevData, [field]: value }));
+    setFormData(prev => ({ ...prev, [field]: value }));
+    if(error) setError('');
   };
 
-  const handleNextStep = () => {
-    if (currentStep < totalSteps) {
+  const validateStep = () => {
+      if(currentStep === 1 && formData.phone.length !== 10) { setError('Please enter a valid 10-digit phone number.'); return false; }
+      if(currentStep === 3 && (!formData.name || !formData.email || !formData.password)) { setError('Please fill in all mandatory fields.'); return false; }
+      setError('');
+      return true;
+  }
+
+  const handleNextStep = async () => {
+    if (!validateStep()) return;
+
+    if (currentStep < 3) {
       setCurrentStep(step => step + 1);
     } else {
-      // 2. THIS IS THE CRITICAL CHANGE FOR AUTO-LOGIN
-      console.log('Final Registration Data Submitted:', formData);
-      
-      // Call the function passed from App.jsx to log the user in
-      onRegistrationComplete(formData); 
-      
-      // Navigate to the success page and pass the user's name
-      navigate('/registration-success', { state: { userName: formData.name } }); 
+      try {
+        await axios.post('http://localhost:3000/auth/register', formData);
+        onRegistrationComplete(formData); 
+        navigate('/registration-success', { state: { userName: formData.name } }); 
+      } catch (err) {
+        console.error("Registration failed:", err);
+        setError(err.response?.data?.message || 'An error occurred during registration.');
+      }
     }
   };
 
-  const handlePreviousStep = () => {
-    if (currentStep > 1) {
-      setCurrentStep(step => step - 1);
-    } else {
-      navigate(-1);
-    }
-  };
+  const handlePreviousStep = () => currentStep > 1 ? setCurrentStep(step => step - 1) : navigate(-1);
   
-  // The rest of the file (progress bar, renderStep, return statement) remains the same.
-  // ... (no more changes below this line in this file)
-  const progressWidth = `${((currentStep - 1) / (totalSteps - 1)) * 100}%`;
-
-  const renderStep = () => {
-    switch (currentStep) {
-      case 1:
-        return <Step1_EnterPhone onNext={handleNextStep} onBack={handlePreviousStep} formData={formData} updateFormData={updateFormData} />;
-      case 2:
-        return <Step2_VerifyOTP onNext={handleNextStep} onBack={handlePreviousStep} />;
-      case 3:
-        return <Step3_UserDetails onNext={handleNextStep} onBack={handlePreviousStep} formData={formData} updateFormData={updateFormData} />;
-      default:
-        return null;
-    }
-  };
+  const stepTitles = ["Your Phone Number", "Verify OTP", "Your Details"];
 
   return (
-    <div className="bg-custom-gray font-lato min-h-screen flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-4xl bg-white rounded-lg shadow-lg border border-gray-200">
-        <header className="p-6 border-b border-gray-200 flex justify-between items-center">
-          <div className="flex items-center">
-            <button onClick={handlePreviousStep} className="cursor-pointer">
-              <span className="material-icons text-custom-navy">arrow_back</span>
-            </button>
-            <h1 className="text-2xl font-bold ml-4 text-custom-navy font-merriweather">New User Registration</h1>
-          </div>
-          <button className="flex items-center text-gray-600 hover:text-custom-navy">
-            <span className="material-icons mr-2">help_outline</span>
-            Help
-          </button>
+    <div className="bg-brand-dark min-h-screen flex items-center justify-center p-4 font-lato">
+      <div className="bg-white w-full max-w-xl p-8 md:p-10 rounded-2xl shadow-2xl animate-fadeInUp">
+        
+        <header className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-brand-dark playfair-display">{stepTitles[currentStep-1]}</h1>
+            <div className="w-full bg-gray-200 rounded-full h-1.5 mt-4">
+                <div className="bg-brand-accent h-1.5 rounded-full transition-all duration-500" style={{ width: `${(currentStep / 3) * 100}%` }}></div>
+            </div>
         </header>
 
-        <main className="p-8">
-          <div className="w-full max-w-lg mx-auto bg-white p-8 rounded-md">
-            <div className="mb-8">
-              <div className="relative pt-1">
-                <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-200">
-                  <div style={{ width: progressWidth }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-custom-gold transition-all duration-500"></div>
-                </div>
-                <div className="flex justify-between text-xs text-gray-500">
-                  <span className={currentStep === 1 ? 'font-bold text-custom-navy' : ''}>Phone</span>
-                  <span className={currentStep === 2 ? 'font-bold text-custom-navy' : ''}>Verification</span>
-                  <span className={currentStep === 3 ? 'font-bold text-custom-navy' : ''}>Your Details</span>
-                </div>
-              </div>
-            </div>
-            {renderStep()}
-          </div>
+        <main>
+          {currentStep === 1 && <Step1_EnterPhone updateFormData={updateFormData} formData={formData} />}
+          {currentStep === 2 && <Step2_VerifyOTP updateFormData={updateFormData} formData={formData} />}
+          {currentStep === 3 && <Step3_UserDetails updateFormData={updateFormData} formData={formData} />}
+
+          {error && <p className="text-red-500 text-sm text-center mt-4">{error}</p>}
         </main>
+
+        <footer className="mt-8 pt-6 border-t border-gray-200">
+            <div className="flex justify-between items-center">
+                <button onClick={handlePreviousStep} className="font-semibold text-brand-gray hover:text-brand-dark transition-colors">
+                  {currentStep === 1 ? 'Cancel' : 'Back'}
+                </button>
+                <button onClick={handleNextStep} className="px-8 py-3 bg-brand-accent text-brand-dark font-bold rounded-lg shadow-md hover:bg-opacity-90 transition-transform hover:scale-105">
+                  {currentStep === 3 ? 'Complete Registration' : 'Next Step'}
+                </button>
+            </div>
+        </footer>
+
       </div>
     </div>
   );

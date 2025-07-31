@@ -1,41 +1,24 @@
 import React from 'react';
 
-// 1. Accept formData and updateFormData as props
-export default function Step1_EnterPhone({ onNext, onBack, formData, updateFormData }) {
-  
-  // 2. Handle input changes by calling the function from the parent
-  const handleChange = (e) => {
-    updateFormData('phone', e.target.value);
-  };
-
+export default function Step1_EnterPhone({ updateFormData, formData }) {
   return (
-    <>
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="phone">
-          Phone Number
-        </label>
-        <input
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-gold focus:border-transparent"
-          id="phone"
-          name="phone"
-          placeholder="Enter your Mobile Number"
-          type="tel"
-          // 3. Set the value from and send changes to the parent's state
+    <div className="space-y-4">
+      <label className="block text-sm font-semibold text-brand-gray mb-2" htmlFor="phone">
+        Phone Number <span className="text-red-500">*</span>
+      </label>
+      <div className="flex rounded-lg shadow-sm">
+        <span className="inline-flex items-center px-4 rounded-l-lg border border-r-0 border-gray-300 bg-gray-100 text-brand-gray">+91</span>
+        <input 
+          id="phone" 
+          name="phone" 
+          type="tel" 
+          maxLength="10"
+          placeholder="98765 43210"
           value={formData.phone}
-          onChange={handleChange}
+          onChange={(e) => /^\d*$/.test(e.target.value) && updateFormData('phone', e.target.value)}
+          className="w-full px-5 py-3 rounded-r-lg border border-gray-300 focus:border-brand-accent focus:ring-0 transition-all text-brand-dark"
         />
       </div>
-
-      <div className="flex justify-between items-center mt-10">
-        <button onClick={() => onBack()} className="flex items-center text-gray-600 hover:text-custom-navy">
-          <span className="material-icons mr-2">arrow_back</span>
-          Cancel and Go Back
-        </button>
-        <button onClick={onNext} className="bg-custom-navy text-white font-bold py-3 px-6 rounded-lg hover:bg-opacity-90 flex items-center">
-          Get OTP
-          <span className="material-icons ml-2">arrow_forward</span>
-        </button>
-      </div>
-    </>
+    </div>
   );
 }

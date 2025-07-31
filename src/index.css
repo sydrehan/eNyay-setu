@@ -1,3 +1,4 @@
+/* src/index.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -15,3 +16,21 @@ body {
 .playfair-display {
     font-family: 'Playfair Display', serif;
 }
+
+
+/* --- THIS IS THE NEW, CRITICAL FIX --- */
+/* By putting this in a @layer components, Tailwind knows how to handle it. */
+@layer components {
+    /* Target form elements ONLY when they are inside a white container */
+    .bg-white input,
+    .bg-white select,
+    .bg-white textarea {
+        @apply text-brand-dark; /* Make the text Midnight Blue (almost black) */
+    }
+
+    /* We can also ensure labels are the correct color too */
+    .bg-white label {
+        @apply text-brand-gray; /* Make label text Steel Blue/Gray */
+    }
+}
+/* --- END OF FIX --- */
